@@ -101,7 +101,7 @@ Création de solutions initiales orientées :
 ### 8. Algorithme principal
 La fonction principale est :
 
-```python
-run_nsga2_calbp(...)
+`python
+run_nsga2_calbp(...)`
 
-### 8. Algorithme principal
+### 9. Algorithme principal
