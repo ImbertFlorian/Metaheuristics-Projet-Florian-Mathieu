@@ -1,5 +1,5 @@
-# Metaheuristics-Projet-Florian-Mathieu
-Projet de Métaheuristics de Florian IMBERT &amp; Mathieu TEULON
+# Metaheuristics-Projet-Florian-Matthieu
+Projet de Métaheuristics de Florian IMBERT &amp; Matthieu TEULON
 
 # e_constraint.py
 ## Description du projet
