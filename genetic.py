@@ -682,7 +682,7 @@ if __name__ == "__main__":
     from e_constraint import read_instance
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    filepath = os.path.join(base_dir, "instances", "CALBP_OTTO_Jaeschke_n9.txt")
+    filepath = os.path.join(base_dir, "instances", "CALBP_OTTO_Roszieg_n25.txt")
 
     data = read_instance(filepath, energy_scale=100)
 
@@ -708,3 +708,7 @@ if __name__ == "__main__":
         title="Front de Pareto GA",
         save_path="pareto_ga.png"
     )
+
+
+    
+    
