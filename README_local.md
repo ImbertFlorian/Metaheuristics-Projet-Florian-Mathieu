@@ -6,7 +6,7 @@ Ce dépôt est organisé autour de trois programmes principaux :
 
     tuning_local.py : Le programme d'étude de sensibilité (Grid Search) permettant de justifier mathématiquement les paramètres clés de la métaheuristique.
 
-    HV_local.py : Un programme qui évalue les performances via l'Hyper volume normalisé. De plus, le programme va plot le front métaheuristique et le front exact pour les comparer. 
+    HV_local.py : Un programme qui évalue les performances via l'Hyper volume normalisé. De plus, le programme va plot le front métaheuristique et le front exact pour la comparaison. 
 
 # Algorithme : Multi-Start Pareto Local Search (MS-PLS)
 
