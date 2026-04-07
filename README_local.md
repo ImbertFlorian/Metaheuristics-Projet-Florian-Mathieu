@@ -11,17 +11,17 @@ Ce dépôt est organisé autour de deux programmes principaux :
 L'algorithme Local_Search_V2 utilise une structure de recherche locale adaptée à l'optimisation multi-objectifs, renforcée par une mécanique Multi-Start pour éviter la stagnation dans des optimums locaux.
 ## 1. Fonctionnement général
 
-    Initialisation : L'archive de départ est remplie avec des solutions générées par des heuristiques constructives extrêmes (optimisation pure Coût / optimisation pure Énergie) ainsi que N solutions générées aléatoirement mais respectant les contraintes de précédence.
+Initialisation : L'archive de départ est remplie avec des solutions générées par des heuristiques constructives extrêmes (optimisation pure Coût / optimisation pure Énergie) ainsi que N solutions générées aléatoirement mais respectant les contraintes de précédence.
 
-    Voisinage : À chaque itération, l'algorithme explore le voisinage d'une solution non dominée en :
+Voisinage : À chaque itération, l'algorithme explore le voisinage d'une solution non dominée en :
 
-        Modifiant le mode d'exécution d'une tâche (Humain, Cobot ou Hybride).
+    Modifiant le mode d'exécution d'une tâche (Humain, Cobot ou Hybride).
 
-        Échangeant la position de deux tâches adjacentes dans la séquence (si les contraintes de précédence le permettent).
+    Échangeant la position de deux tâches adjacentes dans la séquence (si les contraintes de précédence le permettent).
 
-    Mise à jour de l'archive : Si un voisin n'est dominé par aucune solution actuelle, il intègre l'archive et filtre les anciennes solutions potentiellement dominées.
+Mise à jour de l'archive : Si un voisin n'est dominé par aucune solution actuelle, il intègre l'archive et filtre les anciennes solutions potentiellement dominées.
 
-    Multi-Start (Restart) : Si l'algorithme converge et explore entièrement l'archive avant la fin du temps limite, il génère une nouvelle solution aléatoire pour "sauter" dans une zone inexplorée de l'espace de recherche.
+Multi-Start (Restart) : Si l'algorithme converge et explore entièrement l'archive avant la fin du temps limite, il génère une nouvelle solution aléatoire pour "sauter" dans une zone inexplorée de l'espace de recherche.
 
 ## 2. Évaluation de la performance (Hypervolume)
 
