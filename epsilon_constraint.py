@@ -2,7 +2,6 @@ from docplex.mp.model import Model
 import os
 import matplotlib.pyplot as plt
 
-
 # ============================================================
 # 1. LECTURE D'INSTANCE
 # ============================================================
@@ -120,7 +119,6 @@ def read_instance(filepath, energy_scale=100):
 # ============================================================
 # 2. CONSTRUCTION DU MODELE MILP
 # ============================================================
-
 def build_calbp_model(data, epsilon=None, primary="cost"):
     """
     Construit le modèle MILP CALBP.
@@ -227,7 +225,7 @@ def build_calbp_model(data, epsilon=None, primary="cost"):
 # 3. PARAMETRAGE SOLVEUR
 # ============================================================
 
-def configure_solver(mdl, time_limit=60, mip_gap=0.0, threads=0):
+def configure_solver(mdl, time_limit=240, mip_gap=0.0, threads=0):
     """
     Configure CPLEX/DOcplex.
     threads=0 : laisse CPLEX décider / utiliser les coeurs disponibles.
@@ -509,7 +507,7 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Choisir ici l'instance à traiter
-    filepath = r"C:\Users\floim\Desktop\Florian CI2\Semestre 2\P2\MORE TP Amine\Projet Final\instances\instances\CALBP_OTTO_Heskiaoff_n28.txt"
+    filepath = os.path.join(base_dir, "instances", "CALBP_SCHOLL_instance_n=100_473.txt")
 
     # Lecture unique de l'instance
     data = read_instance(filepath, energy_scale=100)
@@ -517,7 +515,7 @@ if __name__ == "__main__":
     # Calcul du front exact
     pareto, bounds = exact_pareto_front_epsilon_constraint(
         data,
-        time_limit=60,   # None si tu ne veux pas de limite
+        time_limit=240,   # None si tu ne veux pas de limite
         mip_gap=0.0,     # 0.0 = exact
         threads=0        # utilise les coeurs disponibles
     )
