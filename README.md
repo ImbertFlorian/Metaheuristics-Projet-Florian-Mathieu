@@ -51,11 +51,15 @@ Transforme la solution DOcplex en dictionnaire Python lisible.
 Fonction :
 - `compute_energy_bounds(data, time_limit=None, mip_gap=0.0, threads=0)`
 
-Calcule :
-- l'énergie minimale,
-- l'énergie associée à la solution de coût minimal,
-- le coût minimal,
-- le coût associé à l'énergie minimale.
+Résout deux problèmes :
+- minimisation de l’énergie,
+- minimisation du coût.
+
+Rôle dans l’algorithme :
+déterminer les bornes initiales du problème bi-objectif :
+- énergie minimale,
+- énergie maximale (issue du coût minimal).
+Ces bornes servent à initialiser l’epsilon-constraint.
 
 ### 6. Filtrage non dominé
 Fonctions :
@@ -68,7 +72,13 @@ Supprime les doublons et les solutions dominées.
 Fonction :
 - `exact_pareto_front_epsilon_constraint(data, time_limit=None, mip_gap=0.0, threads=0)`
 
-Applique la méthode epsilon-constraint exacte.
+Applique la méthode epsilon-constraint exacte :
+Étapes :
+1. initialiser `epsilon = énergie maximale`
+2. résoudre : min coût sous contrainte `énergie <= epsilon`
+3. récupérer l’énergie de la solution `e*`
+4. mettre `epsilon = e* - 1`
+5. répéter jusqu’à l’énergie minimale
 
 ### 8. Affichage texte
 Fonctions :
