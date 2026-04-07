@@ -216,9 +216,9 @@ def build_predecessors_dict(inst: CALBPInstance) -> dict:
                         changed = True
     return preds
 
-def generate_random_valid_solution(inst: CALBPInstance, all_preds: dict) -> Solution:
+def generate_random_valid_solution(inst: CALBPInstance, all_preds: dict, nb_swaps: int = 10) -> Solution:
     seq = list(sorted(inst.tasks))
-    for _ in range(20): 
+    for _ in range(nb_swaps):  # <-- Le paramètre remplace le '20'
         i = random.randint(0, len(seq) - 2)
         if seq[i] not in all_preds[seq[i+1]]:
             seq[i], seq[i+1] = seq[i+1], seq[i]
@@ -254,13 +254,13 @@ def generate_neighbors(sol: Solution, all_preds: dict) -> list:
 # ALGORITHME PLS 
 # ============================================================
 
-def pareto_local_search(inst: CALBPInstance, time_limit: float = 30.0) -> list:
-    print(f"Lancement de la Recherche Locale (Temps limite: {time_limit}s)...")
+def pareto_local_search(inst: CALBPInstance, time_limit: float = 30.0, nb_initial_sols: int = 20, nb_swaps: int = 10) -> list:
+    print(f"Lancement de la Recherche Locale (Temps limite: {time_limit}s, Sols Init: {nb_initial_sols}, Swaps: {nb_swaps})...")
     all_preds = build_predecessors_dict(inst)
     
     initial_sols = [constructive_heuristic_cost(inst), constructive_heuristic_energy(inst)]
-    for _ in range(10): # Paramètre optimisé
-        initial_sols.append(generate_random_valid_solution(inst, all_preds))
+    for _ in range(nb_initial_sols): # <-- Le paramètre remplace le '10'
+        initial_sols.append(generate_random_valid_solution(inst, all_preds, nb_swaps))
         
     archive = filter_nondominated_sols(initial_sols)
     explored_signatures = set()
@@ -277,7 +277,8 @@ def pareto_local_search(inst: CALBPInstance, time_limit: float = 30.0) -> list:
                 break
                 
         if current_sol is None:
-            current_sol = generate_random_valid_solution(inst, all_preds)
+            # Restart avec le bon nombre de swaps
+            current_sol = generate_random_valid_solution(inst, all_preds, nb_swaps) 
             explored_signatures.add((tuple(current_sol.task_seq), tuple(sorted(current_sol.task_modes.items()))))
             
         neighbors = generate_neighbors(current_sol, all_preds)
@@ -297,25 +298,101 @@ def pareto_local_search(inst: CALBPInstance, time_limit: float = 30.0) -> list:
     return archive
 
 # ============================================================
+# CALCUL HYPERVOLUME
+# ============================================================
+
+def calculate_reference_point(inst: CALBPInstance) -> Tuple[float, float]:
+    """
+    Calcule le point de référence (tau) pour l'hypervolume selon la formule du sujet :
+    tau = ( |K|*(Cs+Cw+Cc) + 1 , sum(max(E_jm)) + Re*|K|*T + 1 )
+    """
+    num_k = len(inst.stations)
+    
+    ref_cost = num_k * (inst.Cs + inst.Cw + inst.Cc) + 1
+    
+    max_energy_sum = 0.0
+    for j in inst.tasks:
+        max_energy_sum += max(inst.E[(j, m)] for m in inst.modes)
+        
+    ref_energy = max_energy_sum + (inst.Re * num_k * inst.T) + 1
+    
+    return (ref_cost, ref_energy)
+
+def calculate_hypervolume(pareto_front: List[Solution], ref_point: Tuple[float, float]) -> float:
+    """Calcule l'Hypervolume (HV) d'un front de Pareto en 2D (minimisation)."""
+    if not pareto_front:
+        return 0.0
+        
+    points = [(p.cost, p.energy) for p in pareto_front]
+    points.sort(key=lambda x: x[0]) # Tri par coût croissant
+    
+    ref_c, ref_e = ref_point
+    hv = 0.0
+    current_ref_e = ref_e
+    
+    for cost, energy in points:
+        if cost > ref_c or energy > ref_e:
+            continue
+            
+        width = ref_c - cost
+        height = current_ref_e - energy
+        hv += width * height
+        current_ref_e = energy
+        
+    return hv
+
+# ============================================================
 # MAIN
 # ============================================================
 if __name__ == "__main__":
-    inst = read_instance(r"C:\Users\floim\Desktop\Florian CI2\Semestre 2\P2\MORE TP Amine\Projet Final\instances\instances\CALBP_OTTO_Mitchell_n21.txt")
+    # --- 1. CONFIGURATION ---
+    filepath = r"C:\Users\floim\Desktop\Florian CI2\Semestre 2\P2\MORE TP Amine\Projet Final\instances\instances\CALBP_OTTO_Heskiaoff_n28.txt"
+    inst = read_instance(filepath)
     
-    front_meta = pareto_local_search(inst, time_limit=30.0)
+    # Paramètres de test
+    time_limit_per_run = 40.0
+    num_runs = 10
+    best_init_sols = 20  # Valeur trouvée par le tuning
+    best_swaps = 5     # Valeur trouvée par le tuning
     
-    print("\n--- FRONT DE PARETO (MÉTAHEURISTIQUE - SCHOLL n=100) ---")
-    for i, sol in enumerate(front_meta, start=1):
+    print(f"=== ÉVALUATION MÉTAHEURISTIQUE : {num_runs} RUNS INDÉPENDANTS ===")
+    print(f"Temps alloué : {time_limit_per_run} secondes par run.\n")
+    
+    all_runs_solutions = []
+    
+    # --- 2. EXECUTION DES RUNS ---
+    for run in range(1, num_runs + 1):
+        print(f"--- Exécution du Run {run}/{num_runs} ---")
+        front_run = pareto_local_search(inst, time_limit=time_limit_per_run, nb_initial_sols=best_init_sols, nb_swaps=best_swaps)
+        all_runs_solutions.extend(front_run)
+        print(f"-> Run {run} terminé : {len(front_run)} solutions locales trouvées.\n")
+        
+    # --- 3. FUSION ET FILTRAGE DU FRONT GLOBAL ---
+    print("Filtrage global de toutes les solutions trouvées...")
+    global_front_meta = filter_nondominated_sols(all_runs_solutions)
+    
+    print(f"\n--- FRONT DE PARETO GLOBAL (MÉTAHEURISTIQUE Locale) ---")
+    print(f"Total de solutions non-dominées conservées : {len(global_front_meta)}")
+    for i, sol in enumerate(global_front_meta, start=1):
         print(f"Point {i}: Coût = {sol.cost:.2f}, Énergie = {sol.energy:.2f}")
         
-    meta_costs = [sol.cost for sol in front_meta]
-    meta_energies = [sol.energy for sol in front_meta]
+    # --- 4. CALCUL DE L'HYPERVOLUME ---
+    ref_point = calculate_reference_point(inst)
+    hv_meta = calculate_hypervolume(global_front_meta, ref_point)
+    
+    print(f"\nPoint de référence (tau) calculé : {ref_point}")
+    print(f"Hypervolume PLS (HV) : {hv_meta:.2f}")
+        
+    # --- 5. AFFICHAGE DU GRAPHIQUE ---
+    meta_costs = [sol.cost for sol in global_front_meta]
+    meta_energies = [sol.energy for sol in global_front_meta]
     
     plt.figure(figsize=(9, 6))
     plt.plot(meta_costs, meta_energies, marker='o', linestyle='-', color='red', 
-             linewidth=2, markersize=8, label='Recherche Locale (PLS)')
+             linewidth=2, markersize=6, label=f'PLS (HV={hv_meta:.0f})')
 
-    # Annotation de quelques points (pas tous pour ne pas surcharger)
+    plt.fill_between(meta_costs, meta_energies, max(meta_energies)*1.1, color='red', alpha=0.05)
+
     step = max(1, len(meta_costs) // 10)
     for i in range(0, len(meta_costs), step):
         plt.annotate(f"({meta_costs[i]:.0f}, {meta_energies[i]:.1f})", 
@@ -324,12 +401,12 @@ if __name__ == "__main__":
 
     plt.xlabel("Coût d'exploitation ($z_c$)", fontsize=12)
     plt.ylabel("Consommation énergétique ($z_e$)", fontsize=12)
-    plt.title("Front de Pareto Métaheuristique (SCHOLL n=100)", fontsize=14, fontweight='bold')
+    instance_name = os.path.splitext(os.path.basename(filepath))[0]
+    plt.title(f"Front de Pareto Métaheuristique Local- {instance_name}", fontsize=14, fontweight='bold')
     plt.grid(True, linestyle='--', alpha=0.6)
     plt.legend()
     
-    plt.savefig("pareto_scholl_100.png", dpi=300)
-    print("\nGraphe sauvegardé sous 'pareto_scholl_100.png'")
+    save_graph = f"pareto_meta_{instance_name}.png"
+    plt.savefig(save_graph, dpi=300)
+    print(f"\nGraphe sauvegardé sous '{save_graph}'")
     plt.show()
-    
-    print("\nNote : Impossible de comparer avec l'hypervolume exact car la méthode MIP classique échoue sur 100 tâches.")
