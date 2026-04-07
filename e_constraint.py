@@ -1,6 +1,7 @@
 from docplex.mp.model import Model
 import os
 import matplotlib.pyplot as plt
+import time
 
 # ============================================================
 # 1. LECTURE D'INSTANCE
@@ -513,12 +514,16 @@ if __name__ == "__main__":
     data = read_instance(filepath, energy_scale=100)
 
     # Calcul du front exact
+    start_time = time.time()
     pareto, bounds = exact_pareto_front_epsilon_constraint(
         data,
         time_limit=240,   # None si tu ne veux pas de limite
         mip_gap=0.0,     # 0.0 = exact
         threads=0        # utilise les coeurs disponibles
     )
+    
+    total_time = time.time() - start_time
+    print(f"Temps total e-constraint : {total_time:.2f} secondes")
 
     scale = data["energy_scale"]
 
