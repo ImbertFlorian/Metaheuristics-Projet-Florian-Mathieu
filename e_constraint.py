@@ -196,6 +196,12 @@ def build_calbp_model(data, epsilon=None, primary="cost"):
     for k in K:
         mdl.add_constraint(w[k] <= o[k])
         mdl.add_constraint(y[k] <= o[k])
+    
+    # 6bis) Si une station est ouverte, elle doit contenir au moins une tâche
+    for k in K:
+        mdl.add_constraint(
+            o[k] <= mdl.sum(x[j, k, m] for j in J for m in M)
+        )
 
     # 7) Temps idle du cobot
     for k in K:
