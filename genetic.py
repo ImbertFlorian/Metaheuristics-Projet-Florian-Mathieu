@@ -615,17 +615,17 @@ def compute_reference_point(data):
     E = data["E"]
     R_e = data["R_e"]
     T = data["T"]
+    scale = data.get("energy_scale", 1)
 
-    # coût max
     cost_ref = len(K) * (C_s + C_w + C_c) + 1
 
-    # énergie max
-    energy_tasks = sum(max(E[(j, m)] for m in M) for j in J)
-    energy_idle = R_e * len(K) * T
+    # conversion en unités réelles
+    energy_tasks_ref = sum(max(E[(j, m)] for m in M) for j in J) / scale
+    energy_idle_ref = (R_e / scale) * len(K) * T
 
-    energy_ref = energy_tasks + energy_idle + 1
+    energy_ref = energy_tasks_ref + energy_idle_ref + 1
 
-    return cost_ref, energy_ref
+    return (float(cost_ref), float(energy_ref))
 
 def compute_hypervolume(pareto, ref_point):
     if not pareto:
@@ -682,7 +682,7 @@ if __name__ == "__main__":
     from e_constraint import read_instance
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    filepath = os.path.join(base_dir, "instances", "CALBP_OTTO_Roszieg_n25.txt")
+    filepath = os.path.join(base_dir, "instances", "CALBP_OTTO_Jackson_n11.txt")
 
     data = read_instance(filepath, energy_scale=100)
 
@@ -708,7 +708,6 @@ if __name__ == "__main__":
         title="Front de Pareto GA",
         save_path="pareto_ga.png"
     )
-
 
     
     
