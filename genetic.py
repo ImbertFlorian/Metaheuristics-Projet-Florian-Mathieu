@@ -439,6 +439,8 @@ def random_individual(data, rng):
 # 8. ALGORITHME GENETIQUE MULTI-OBJECTIF (NSGA-II)
 # ============================================================
 
+import time
+
 def run_nsga2_calbp(
     data,
     pop_size=60,
@@ -446,7 +448,8 @@ def run_nsga2_calbp(
     crossover_rate=0.9,
     mutation_rate=0.3,
     seed=42,
-    verbose=True
+    verbose=True,
+    time_limit_seconds=None
 ):
     rng = random.Random(seed)
 
@@ -470,7 +473,25 @@ def run_nsga2_calbp(
     # -------------------------
     # Boucle principale
     # -------------------------
-    for gen in range(generations):
+    import time
+
+    start_time = time.time()
+    gen = 0
+
+    while True:
+        # arrêt si temps dépassé
+        if time_limit_seconds is not None and (time.time() - start_time >= time_limit_seconds):
+            print("Arrêt : limite de temps atteinte")
+            break
+
+        # arrêt si générations atteintes
+        if gen >= generations:
+            print("Arrêt : nombre de générations atteint")
+            break
+
+        gen += 1
+
+        # ======== ton code GA ========
         fronts = fast_non_dominated_sort(population)
         for front in fronts:
             crowding_distance(front)
@@ -498,14 +519,11 @@ def run_nsga2_calbp(
 
         population = nsga2_select(population + offspring, pop_size)
 
-        if verbose and (gen % 10 == 0 or gen == generations - 1):
+        if verbose and gen % 10 == 0:
             f0 = fast_non_dominated_sort(population)[0]
-            print(
-                f"Génération {gen+1}/{generations} | "
-                f"Taille front courant = {len(f0)} | "
-                f"Meilleur coût = {min(ind.cost for ind in population):.2f} | "
-                f"Meilleure énergie = {min(ind.energy for ind in population):.2f}"
-            )
+            print(f"Génération {gen} | front = {len(f0)}")
+    total_time = time.time() - start_time
+    print(f"Temps total GA : {total_time:.2f} secondes")
 
     # -------------------------
     # Front final
@@ -540,7 +558,7 @@ def run_nsga2_calbp(
 
 import matplotlib.pyplot as plt
 
-def plot_pareto_front_ga(pareto, title="Front de Pareto GA", save_path=None, show_plot=True):
+def plot_pareto_front_ga(pareto, data, title="Front de Pareto GA", save_path=None, show_plot=True):
     if not pareto:
         print("Aucune solution à afficher.")
         return
@@ -550,6 +568,10 @@ def plot_pareto_front_ga(pareto, title="Front de Pareto GA", save_path=None, sho
 
     costs = [s["cost"] for s in pareto_sorted]
     energies = [s["energy"] for s in pareto_sorted]
+    
+    ref_point = compute_reference_point(data)
+    hv = compute_hypervolume(pareto_sorted, ref_point)
+    hv_norm = compute_hv_norm(hv, ref_point)
 
     plt.figure(figsize=(8, 5))
 
@@ -558,7 +580,7 @@ def plot_pareto_front_ga(pareto, title="Front de Pareto GA", save_path=None, sho
     
     plt.xlabel("Coût total")
     plt.ylabel("Consommation énergétique")
-    plt.title(title)
+    plt.title(f"{title}\nHV = {hv:.2f} | HVnorm = {hv_norm:.4f}")
     plt.grid(True)
 
     # annotation
@@ -580,6 +602,51 @@ def plot_pareto_front_ga(pareto, title="Front de Pareto GA", save_path=None, sho
         plt.show()
 
     plt.close()
+    
+
+def compute_reference_point(data):
+    K = data["K"]
+    J = data["J"]
+    M = data["M"]
+
+    C_s = data["C_s"]
+    C_w = data["C_w"]
+    C_c = data["C_c"]
+    E = data["E"]
+    R_e = data["R_e"]
+    T = data["T"]
+
+    # coût max
+    cost_ref = len(K) * (C_s + C_w + C_c) + 1
+
+    # énergie max
+    energy_tasks = sum(max(E[(j, m)] for m in M) for j in J)
+    energy_idle = R_e * len(K) * T
+
+    energy_ref = energy_tasks + energy_idle + 1
+
+    return cost_ref, energy_ref
+
+def compute_hypervolume(pareto, ref_point):
+    if not pareto:
+        return 0.0
+
+    pareto_sorted = sorted(pareto, key=lambda s: s["cost"])
+
+    hv = 0.0
+    prev_energy = ref_point[1]
+
+    for s in pareto_sorted:
+        width = ref_point[0] - s["cost"]
+        height = prev_energy - s["energy"]
+        hv += width * height
+        prev_energy = s["energy"]
+
+    return hv
+
+def compute_hv_norm(hv, ref_point):
+    hv_max = ref_point[0] * ref_point[1]
+    return hv / hv_max
 
 
 # ============================================================
@@ -619,15 +686,15 @@ if __name__ == "__main__":
 
     data = read_instance(filepath, energy_scale=100)
 
-    pareto_ga, final_population = run_nsga2_calbp(
+    pareto_ga, _ = run_nsga2_calbp(
         data,
         pop_size=80,
-        generations=150,
         crossover_rate=0.9,
         mutation_rate=0.35,
         seed=42,
-        verbose=True
-    )    
+        verbose=True,
+        time_limit_seconds=None
+    ) 
     print_ga_pareto_front(pareto_ga)
         
     # Nom du fichier image
@@ -637,31 +704,7 @@ if __name__ == "__main__":
     # Tracé du front GA
     plot_pareto_front_ga(
         pareto_ga,
-        title=f"Front de Pareto approché - GA - {instance_name}",
-        save_path=save_graph,
-        show_plot=True
+        data,
+        title="Front de Pareto GA",
+        save_path="pareto_ga.png"
     )
-
-
-    
-    
-#def plot_comparison(pareto_exact, pareto_ga):
-    #plt.figure(figsize=(8, 5))
-
-    # EXACT
-    #c_exact = [s["cost"] for s in pareto_exact]
-    #e_exact = [s["energy"] for s in pareto_exact]
-    #plt.plot(c_exact, e_exact, marker="o", label="Exact")
-
-    # GA
-    #c_ga = [s["cost"] for s in pareto_ga]
-    #e_ga = [s["energy"] for s in pareto_ga]
-    #plt.scatter(c_ga, e_ga, marker="x", label="GA")
-
-    #plt.xlabel("Coût total")
-    #plt.ylabel("Consommation énergétique")
-    #plt.title("Comparaison Exact vs GA")
-    #plt.legend()
-    #plt.grid(True)
-
-    #plt.show()
