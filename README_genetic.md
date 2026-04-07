@@ -104,4 +104,28 @@ La fonction principale est :
 `python
 run_nsga2_calbp(...)`
 
-### 9. Algorithme principal
+## 9. Tuning
+`run_nsga2_calbp(
+    data,
+    pop_size=80,
+    crossover_rate=0.9,
+    mutation_rate=0.35,
+    seed=42,
+    verbose=True,
+    time_limit_seconds=None
+)`
+
+### 9.1 Test 1 :
+- pop_size=80 :
+Taille de la population, nombre de solutions à chaque génération
+
+- crossover_rate=0.9 :
+probabilité de croisement : 90% → on mélange deux parents, 10% → on copie un parent
+
+- mutation_rate=0.35 :
+probabilité de mutation : swap dans la permutation, changement de mode
+
+### 9.2 Test 2 :
+ga_pop_size=100,
+ga_crossover_rate=0.9,
+ga_mutation_rate=0.2,
