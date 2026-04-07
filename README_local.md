@@ -8,7 +8,7 @@ Ce dépôt est organisé autour de deux programmes principaux :
 
 # Algorithme : Multi-Start Pareto Local Search (MS-PLS)
 
-L'algorithme Local_Search_V2 utilise une structure de recherche locale adaptée à l'optimisation multi-objectifs, renforcée par une mécanique Multi-Start pour éviter la stagnation dans des optimums locaux.
+L'algorithme local.py utilise une structure de recherche locale adaptée à l'optimisation multi-objectifs, renforcée par une mécanique Multi-Start pour éviter la stagnation dans des optimums locaux.
 ## 1. Fonctionnement général
 
 Initialisation : L'archive de départ est remplie avec des solutions générées par des heuristiques constructives extrêmes (optimisation pure Coût / optimisation pure Énergie) ainsi que N solutions générées aléatoirement mais respectant les contraintes de précédence.
