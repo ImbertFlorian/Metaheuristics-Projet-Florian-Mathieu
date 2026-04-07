@@ -27,7 +27,8 @@ L'algorithme Local_Search_V2 utilise une structure de recherche locale adaptée 
 
 La qualité du front de Pareto obtenu est mesurée via l'indicateur Hypervolume (HV). Le point de référence (τ) est calculé automatiquement en fonction des pires valeurs théoriques possibles de l'instance traitée :
 τ=(∣K∣⋅(Cs​+Cw​+Cc​)+1 , ∑max(Ejm​)+Re​∣K∣T+1)
-⚙️ Étude de Sensibilité (Parameter Tuning)
+
+# Étude de Sensibilité (Parameter Tuning)
 
 Le script Parameter_Tuning.py a été développé pour respecter une démarche scientifique stricte. Il effectue une "Recherche sur Grille" (Grid Search) pour calibrer les deux paramètres clés du MS-PLS :
 
