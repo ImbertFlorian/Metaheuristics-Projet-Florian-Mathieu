@@ -103,3 +103,5 @@ La fonction principale est :
 
 ```python
 run_nsga2_calbp(...)
+
+### 8. Algorithme principal
