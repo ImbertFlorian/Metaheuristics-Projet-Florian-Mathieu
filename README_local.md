@@ -1,4 +1,4 @@
-📂 Contenu du dépôt
+# Contenu du dépôt
 
 Ce dépôt est organisé autour de deux programmes principaux :
 
@@ -6,7 +6,7 @@ Ce dépôt est organisé autour de deux programmes principaux :
 
     Parameter_Tuning.py : Le programme d'étude de sensibilité (Grid Search) permettant de justifier mathématiquement les paramètres clés de la métaheuristique.
 
-🧠 Algorithme : Multi-Start Pareto Local Search (MS-PLS)
+# Algorithme : Multi-Start Pareto Local Search (MS-PLS)
 
 L'algorithme Local_Search_V2 utilise une structure de recherche locale adaptée à l'optimisation multi-objectifs, renforcée par une mécanique Multi-Start pour éviter la stagnation dans des optimums locaux.
 1. Fonctionnement général
