@@ -5,7 +5,8 @@ Projet de Métaheuristics de Florian IMBERT &amp; Matthieu TEULON
 ## Description du projet (Non-dominated Sorting Genetic Algorithm II) (NSGA-II)
 
 Le code inclut :
-(1)
+
+- (1)
 - une structure `Individual` pour représenter une solution
 - la gestion des **contraintes de précédence**
 - la **réparation** pour une solution qui respecte les précédences (permutation topologique)
@@ -14,7 +15,8 @@ Le code inclut :
 - l’évaluation multi-objectif :
   - coût
   - énergie
-  (2)
+    
+- (2)
 - les composants principaux de **NSGA-II** :
   - dominance
   - tri non dominé rapide
@@ -26,7 +28,8 @@ Le code inclut :
   - mutation de permutation
   - mutation des modes
 - des heuristiques constructives initiales
-(3)
+
+- (3)
 - le calcul de :
   - **front de Pareto**
   - **hypervolume**
