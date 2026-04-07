@@ -489,7 +489,7 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Mets ici l'instance à comparer
-    instance_path = os.path.join(base_dir, "instances", "CALBP_OTTO_Jackson_n11.txt")
+    instance_path = os.path.join(base_dir, "instances", "CALBP_OTTO_Roszieg_n25.txt")
 
     summary = compare_instance(
         instance_path=instance_path,
