@@ -15,9 +15,9 @@ Initialisation : L'archive de départ est remplie avec des solutions générées
 
 Voisinage : À chaque itération, l'algorithme explore le voisinage d'une solution non dominée en :
 
-    Modifiant le mode d'exécution d'une tâche (Humain, Cobot ou Hybride).
+- Modifiant le mode d'exécution d'une tâche (Humain, Cobot ou Hybride).
 
-    Échangeant la position de deux tâches adjacentes dans la séquence (si les contraintes de précédence le permettent).
+- Échangeant la position de deux tâches adjacentes dans la séquence (si les contraintes de précédence le permettent).
 
 Mise à jour de l'archive : Si un voisin n'est dominé par aucune solution actuelle, il intègre l'archive et filtre les anciennes solutions potentiellement dominées.
 
