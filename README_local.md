@@ -1,10 +1,12 @@
 # Contenu du dépôt
 
-Ce dépôt est organisé autour de deux programmes principaux :
+Ce dépôt est organisé autour de trois programmes principaux :
 
     local.py : Le programme principal contenant l'algorithme complet de recherche locale. Il génère et évalue le front de Pareto, calcule l'Hypervolume et trace le graphique final.
 
     tuning_local.py : Le programme d'étude de sensibilité (Grid Search) permettant de justifier mathématiquement les paramètres clés de la métaheuristique.
+
+    HV_local.py : Un programme qui évalue les performances via l'Hyper volume normalisé. De plus, le programme va plot le front métaheuristique et le front exact pour les comparer. 
 
 # Algorithme : Multi-Start Pareto Local Search (MS-PLS)
 
