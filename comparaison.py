@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 # ============================================================
-# IMPORTS DE TES DEUX CODES
+# IMPORTS DES DEUX CODES
 # ============================================================
 
 from e_constraint import (
