@@ -127,7 +127,7 @@ def build_calbp_model(data, epsilon=None, primary="cost"):
     primary = 'cost'   -> min z_c
     primary = 'energy' -> min z_e
 
-    Si epsilon n'est pas None, ajoute la contrainte z_e <= epsilon.
+    Si epsilon n'est pas None, ajouter la contrainte z_e <= epsilon.
     """
 
     J = data["J"]
@@ -234,8 +234,8 @@ def build_calbp_model(data, epsilon=None, primary="cost"):
 
 def configure_solver(mdl, time_limit=240, mip_gap=0.0, threads=0):
     """
-    Configure CPLEX/DOcplex.
-    threads=0 : laisse CPLEX décider / utiliser les coeurs disponibles.
+    Configurer CPLEX/DOcplex.
+    threads=0 : laisser CPLEX décider / utiliser les coeurs disponibles.
     """
     if time_limit is not None:
         mdl.parameters.timelimit = time_limit
