@@ -30,10 +30,10 @@ def calculate_hypervolume(points, ref_point):
     return hv
 
 if __name__ == "__main__":
-    # --- 1. RENSEIGNE TON POINT DE RÉFÉRENCE ICI ---
+    # 1. point de référence tau
     tau = (316.0, 13.11) 
 
-    # --- 2. COPIE-COLLE TES POINTS EXACTS (DOcplex d'après ta photo) ---
+    # 2. POINTS EXACTS du epsilon-contrainte
     front_exact = [
         (200.00, 0.00),
         (125.00, 0.57),
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         (45.00, 6.11)
     ]
 
-    # --- 3. COPIE-COLLE TES POINTS MÉTAHEURISTIQUE (PLS) ---
+    # 3.POINTS MÉTAHEURISTIQUE 
     front_meta = [
         (200.00, 0.00),
         (125.00, 0.57),
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         (45.00, 6.11)
     ]
 
-    # --- 4. CALCULS ---
+    #  4. CALCULS
     hv_exact = calculate_hypervolume(front_exact, tau)
     hv_meta = calculate_hypervolume(front_meta, tau)
     
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     else:
         hv_norm = 0.0
 
-    # --- 5. AFFICHAGE POUR TON TABLEAU DE RAPPORT ---
+    #  5. AFFICHAGE 
     print(f"--- RÉSULTATS POUR L'INSTANCE BOWMAN ---")
     print(f"Point de référence tau : {tau}")
     print(f"Hypervolume Exact (HV_exact) : {hv_exact:.2f}")
