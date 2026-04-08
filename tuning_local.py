@@ -19,7 +19,7 @@ from Local_Search_V2 import (
 
 def calculate_reference_point(inst) -> Tuple[float, float]:
     """
-    Calcule le point de référence (tau) pour l'hypervolume selon la formule du sujet.
+    Calcule le point de référence (tau) pour l'hypervolume
     """
     num_k = len(inst.stations)
     ref_cost = num_k * (inst.Cs + inst.Cw + inst.Cc) + 1
@@ -95,7 +95,7 @@ def pareto_local_search_tuned(inst, time_limit, nb_initial_sols, nb_swaps) -> li
     return archive
 
 # ============================================================
-# SCRIPT DE PARAMETER TUNING (GRID SEARCH)
+# SCRIPT DE PARAMETER TUNING 
 # ============================================================
 
 if __name__ == "__main__":
