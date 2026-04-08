@@ -491,7 +491,7 @@ def run_nsga2_calbp(
 
         gen += 1
 
-        # ======== ton code GA ========
+        # ======== code GA ========
         fronts = fast_non_dominated_sort(population)
         for front in fronts:
             crowding_distance(front)
